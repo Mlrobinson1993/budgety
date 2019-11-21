@@ -423,7 +423,7 @@ var UIController = (function() {
 })();
 
 var controller = (function(budgetCtrl, UICtrl) {
-	let myStorage = window.localStorage;
+	// let myStorage = window.localStorage;
 	var setupEventListeners = function() {
 		var DOM = UIController.getDOMStrings();
 
@@ -514,7 +514,7 @@ var controller = (function(budgetCtrl, UICtrl) {
 		}
 	};
 
-	getLocalStorageItems = () => {};
+	// getLocalStorageItems = () => {};
 
 	return {
 		initialiseApp: function() {
@@ -529,7 +529,7 @@ var controller = (function(budgetCtrl, UICtrl) {
 			// getLocalStorageItems();
 			setupEventListeners();
 		},
-		myStorage,
+		// myStorage,
 	};
 })(budgetController, UIController);
 
