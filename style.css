@@ -1,7 +1,6 @@
 /**********************************************
 *** GENERAL
 **********************************************/
-
 * {
 	margin: 0;
 	padding: 0;
@@ -12,9 +11,9 @@
 	display: table;
 	clear: both;
 }
-*/ body {
+body {
 	color: #555;
-	font-family: Open Sans;
+	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
 	position: relative;
 	/* height: 100vh; */
@@ -64,6 +63,10 @@
 	text-align: center;
 	margin-bottom: 10px;
 	font-weight: 300;
+}
+
+.budget__title--month {
+	font-weight: 500;
 }
 
 .budget__value {
@@ -183,12 +186,6 @@
 	margin-right: 10px;
 	border-radius: 5px;
 	transition: border 0.3s;
-}
-
-.add__description {
-}
-.add__value {
-	/* width: 100px; */
 }
 
 .add__btn,
@@ -378,7 +375,8 @@ h2 {
 .unpaid:hover .item__description {
 	font-weight: 900;
 }
-@media screen and (max-width: 648px) {
+
+@media screen and (max-width: 700px) {
 	.budget__items {
 		flex-wrap: wrap;
 	}
@@ -403,16 +401,17 @@ h2 {
 		transform: scale(1.1);
 	}
 
-	.income,
-	.expenses {
-		width: 80vw;
+	.add__description {
+		margin-bottom: 0.75rem;
 	}
 
-	/* .income__list,
-	.expenses__list {
-		width: 80vw;
-	} */
+	.income,
+	.expenses {
+		width: 100vw;
+	}
 }
+
+/* MEDIA QUERIES */
 
 /* MONTHS BUDGET CARDS
 month__total-budget */
@@ -447,11 +446,3 @@ month__total-budget */
 .month > .item__percentage {
 	margin: 0;
 } */
-
-/* @media screen and (max-width: 1000px) {
-	body {
-		height: auto;
-		overflow-y: scroll;
-		justify-content: flex-end;
-	}
-	top */
