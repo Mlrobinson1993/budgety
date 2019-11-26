@@ -24,14 +24,14 @@ var budgetController = (function() {
 		this.value = value;
 	};
 
-	var MonthlyBudgets = function(month, totalBudget, percentage, id) {
-		this.month = month;
-		this.totalBudget = totalBudget;
-		this.percentage = percentage;
-		this.id = id;
-	};
+	// var MonthlyBudgets = function(month, totalBudget, percentage, id) {
+	// 	this.month = month;
+	// 	this.totalBudget = totalBudget;
+	// 	this.percentage = percentage;
+	// 	this.id = id;
+	// };
 
-	var data = {
+	var data = JSON.parse(localStorage.getItem('budgetData')) || {
 		allItems: {
 			exp: [],
 			inc: [],
@@ -128,12 +128,16 @@ var budgetController = (function() {
 			return data.allItems[type].splice(index, 1);
 		},
 
-		CtrlAddMonthlyBudget: function(totalBudget, perc, month) {
-			var obj = new MonthlyBudgets(month, totalBudget, perc, month);
-			data.monthlyTotals.push(obj);
-			console.log(obj);
-			console.log('monthly budget added');
-			UIController.addMonthlyItem(data);
+		// CtrlAddMonthlyBudget: function(totalBudget, perc, month) {
+		// 	var obj = new MonthlyBudgets(month, totalBudget, perc, month);
+		// 	data.monthlyTotals.push(obj);
+		// 	console.log(obj);
+		// 	console.log('monthly budget added');
+		// 	UIController.addMonthlyItem(data);
+		// },
+
+		sendData: function() {
+			return data;
 		},
 
 		testing: function() {
@@ -274,31 +278,31 @@ var UIController = (function() {
 			displays.forEach(item => (item.textContent = 0));
 		},
 
-		addMonthlyItem: function(obj) {
-			var html, index, splitNum, val;
-			//finds index of an object containing the property (month) containing matching text to the current displayed month
-			index = obj.monthlyTotals.findIndex(
-				obj =>
-					obj.id === document.querySelector(DOMStrings.monthDisplay).textContent
-			);
+		// 	addMonthlyItem: function(obj) {
+		// 		var html, index, splitNum, val;
+		// 		//finds index of an object containing the property (month) containing matching text to the current displayed month
+		// 		index = obj.monthlyTotals.findIndex(
+		// 			obj =>
+		// 				obj.id === document.querySelector(DOMStrings.monthDisplay).textContent
+		// 		);
 
-			splitNum = obj.monthlyTotals[index].totalBudget.split('$');
-			val = parseInt(splitNum.pop());
+		// 		splitNum = obj.monthlyTotals[index].totalBudget.split('$');
+		// 		val = parseInt(splitNum.pop());
 
-			html = `<div class="month" id="month-${obj.monthlyTotals[index].id}">
-      ${obj.monthlyTotals[index].month}<span class="month__total-budget">${
-				val > 0 ? `+ $${val}` : `- $${val}`
-			}</span>
-      <span class="item__percentage">${
-				obj.monthlyTotals[index].percentage
-			}</span></div>`;
+		// 		html = `<div class="month" id="month-${obj.monthlyTotals[index].id}">
+		//   ${obj.monthlyTotals[index].month}<span class="month__total-budget">${
+		// 			val > 0 ? `+ $${val}` : `- $${val}`
+		// 		}</span>
+		//   <span class="item__percentage">${
+		// 			obj.monthlyTotals[index].percentage
+		// 		}</span></div>`;
 
-			document
-				.querySelector(DOMStrings.monthlyBudgetContainer)
-				.insertAdjacentHTML('beforeend', html);
+		// 		document
+		// 			.querySelector(DOMStrings.monthlyBudgetContainer)
+		// 			.insertAdjacentHTML('beforeend', html);
 
-			this.clearUI();
-		},
+		// 		this.clearUI();
+		// 	},
 
 		getMonthlyBudget: function() {
 			var totalBudget, budgetPercentage, month;
@@ -403,34 +407,52 @@ var UIController = (function() {
 				state.incVisible = false;
 			}
 
-			state.incVisible === true
-				? (income.style.opacity = 1)
-				: (income.style.opacity = 0);
-			state.expVisible === true
-				? (expense.style.opacity = 1)
-				: (expense.style.opacity = 0);
+			if (state.incVisible === true) {
+				income.style.opacity = 1;
+				income.style.zIndex = '9';
+			} else {
+				income.style.opacity = 0;
+				income.style.zIndex = 0;
+			}
+			if (state.expVisible === true) {
+				expense.style.opacity = 1;
+				expense.style.zIndex = '9';
+			} else {
+				expense.style.opacity = 0;
+				expense.style.zIndex = 0;
+			}
 		},
 
-		// 	storeLocally: () => {
-		// 		let budget = budgetController.getBudget();
-		// 		Object.entries(budget).forEach(arr => {
-		// 			let key = arr[0];
-		// 			let val = arr[1];
-		// 			controller.myStorage.setItem(key, val);
-		// 		});
-		// 	},
+		showSuccessButton: () => {
+			const saveBtn = document.querySelector('.save');
+
+			saveBtn.innerHTML = `<i class="fa fa-check"></i>`;
+			saveBtn.style.backgroundColor = '#4CD698';
+		},
+		restoreSaveButton: () => {
+			const saveBtn = document.querySelector('.save');
+			saveBtn.innerHTML = `<i class="far fa-save"></i>`;
+			saveBtn.style.backgroundColor = 'white';
+		},
+
+		storeLocally: () => {
+			console.log('stored');
+
+			let data = budgetController.sendData();
+
+			localStorage.setItem('budgetData', JSON.stringify(data));
+		},
 	};
 })();
 
 var controller = (function(budgetCtrl, UICtrl) {
-	// let myStorage = window.localStorage;
 	var setupEventListeners = function() {
 		var DOM = UIController.getDOMStrings();
 
 		document.querySelector(DOM.type).addEventListener('change', e => {
 			console.log(e.target.value);
 			UICtrl.changeVisibleBudgetContainer(e.target.value);
-			UICtrl.changeInputFocusColour;
+			UICtrl.changeInputFocusColour();
 		});
 		document.querySelector(DOM.addBtn).addEventListener('click', ctrlAddItem);
 		document.addEventListener('keydown', function(event) {
@@ -444,6 +466,11 @@ var controller = (function(budgetCtrl, UICtrl) {
 			.addEventListener('click', ctrlDeleteItem);
 	};
 
+	document.querySelector('.save').addEventListener('click', () => {
+		UICtrl.storeLocally();
+		UICtrl.showSuccessButton();
+		setTimeout(UICtrl.restoreSaveButton, 2000);
+	});
 	var calculateBudget = function() {
 		// 1. calculate the budget
 		budgetCtrl.calculateBudget();
@@ -452,9 +479,6 @@ var controller = (function(budgetCtrl, UICtrl) {
 
 		//3. Display the budget on the UI
 		UICtrl.displayBudget(budget);
-
-		// //4. store in local storage
-		// UICtrl.storeLocally();
 	};
 
 	var updatePercentages = function() {
@@ -514,7 +538,24 @@ var controller = (function(budgetCtrl, UICtrl) {
 		}
 	};
 
-	// getLocalStorageItems = () => {};
+	var restoreLocalStorage = function() {
+		//retrieve items from localstorage
+		let data = JSON.parse(localStorage.getItem('budgetData'));
+		let expData = data.allItems.exp;
+		let incData = data.allItems.inc;
+		console.log(data);
+		//set data as restored budget
+		//repopulate DOM with restored budget
+		UICtrl.displayBudget({
+			budget: data.budget,
+			percentage: data.percentage,
+			totalIncome: data.totals.inc,
+			totalExpenses: data.totals.exp,
+		});
+		//traverse budget arrays and repopulate list containers
+		expData.forEach(item => UICtrl.addListItem(item, 'exp'));
+		incData.forEach(item => UICtrl.addListItem(item, 'inc'));
+	};
 
 	return {
 		initialiseApp: function() {
@@ -526,10 +567,9 @@ var controller = (function(budgetCtrl, UICtrl) {
 				totalIncome: 0,
 				totalExpenses: 0,
 			});
-			// getLocalStorageItems();
 			setupEventListeners();
+			localStorage.length > 0 ? restoreLocalStorage() : undefined;
 		},
-		// myStorage,
 	};
 })(budgetController, UIController);
 
